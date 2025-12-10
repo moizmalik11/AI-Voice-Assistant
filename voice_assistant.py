@@ -6,11 +6,18 @@ A voice assistant that uses speech recognition, AI processing, and text-to-speec
 
 import speech_recognition as sr
 import pyttsx3
-import openai
 import os
 import sys
 from datetime import datetime
 import json
+
+# Handle different OpenAI library versions
+try:
+    from openai import OpenAI
+    OPENAI_V1 = True
+except ImportError:
+    import openai
+    OPENAI_V1 = False
 
 
 class VoiceAssistant:
@@ -20,17 +27,40 @@ class VoiceAssistant:
         """Initialize the voice assistant with necessary components"""
         # Initialize speech recognition
         self.recognizer = sr.Recognizer()
-        self.microphone = sr.Microphone()
+        
+        # Try to initialize microphone (may fail if PyAudio not available)
+        try:
+            self.microphone = sr.Microphone()
+            self.microphone_available = True
+        except (AttributeError, OSError) as e:
+            print(f"Warning: Microphone initialization failed: {e}")
+            print("Voice input will not be available.")
+            self.microphone = None
+            self.microphone_available = False
         
         # Initialize text-to-speech engine
-        self.tts_engine = pyttsx3.init()
-        self.tts_engine.setProperty('rate', 150)  # Speed of speech
-        self.tts_engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
+        try:
+            self.tts_engine = pyttsx3.init()
+            self.tts_engine.setProperty('rate', 150)  # Speed of speech
+            self.tts_engine.setProperty('volume', 0.9)  # Volume (0.0 to 1.0)
+            self.tts_available = True
+        except Exception as e:
+            print(f"Warning: TTS engine initialization failed: {e}")
+            print("Voice output will not be available.")
+            self.tts_engine = None
+            self.tts_available = False
         
         # Initialize OpenAI API
         self.api_key = api_key or os.getenv('OPENAI_API_KEY')
         if self.api_key:
-            openai.api_key = self.api_key
+            if OPENAI_V1:
+                self.openai_client = OpenAI(api_key=self.api_key)
+            else:
+                import openai
+                openai.api_key = self.api_key
+                self.openai_client = None
+        else:
+            self.openai_client = None
         
         # Conversation history
         self.conversation_history = []
@@ -43,11 +73,16 @@ class VoiceAssistant:
     def speak(self, text):
         """Convert text to speech"""
         print(f"Assistant: {text}")
-        self.tts_engine.say(text)
-        self.tts_engine.runAndWait()
+        if self.tts_available and self.tts_engine:
+            self.tts_engine.say(text)
+            self.tts_engine.runAndWait()
     
     def listen(self):
         """Listen for voice input and convert to text"""
+        if not self.microphone_available or not self.microphone:
+            print("Microphone not available")
+            return None
+            
         with self.microphone as source:
             print("Listening...")
             # Adjust for ambient noise
@@ -81,17 +116,31 @@ class VoiceAssistant:
             })
             
             # Generate response using OpenAI
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful voice assistant. Provide concise and friendly responses."},
-                    *self.conversation_history
-                ],
-                max_tokens=150,
-                temperature=0.7
-            )
-            
-            assistant_message = response.choices[0].message.content.strip()
+            if OPENAI_V1 and self.openai_client:
+                # New OpenAI library (v1.0+)
+                response = self.openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful voice assistant. Provide concise and friendly responses."},
+                        *self.conversation_history
+                    ],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                assistant_message = response.choices[0].message.content.strip()
+            else:
+                # Old OpenAI library (v0.x)
+                import openai
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful voice assistant. Provide concise and friendly responses."},
+                        *self.conversation_history
+                    ],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                assistant_message = response.choices[0].message.content.strip()
             
             # Add assistant response to conversation history
             self.conversation_history.append({
@@ -153,6 +202,11 @@ class VoiceAssistant:
     
     def run(self):
         """Main loop to run the voice assistant"""
+        if not self.microphone_available:
+            print("Error: Microphone not available. Cannot run voice assistant.")
+            print("Please install PyAudio and ensure a microphone is connected.")
+            return
+            
         self.speak(f"Hello! I am your AI voice assistant. Say '{self.wake_word}' followed by your command, or just start speaking.")
         
         listening_mode = True
