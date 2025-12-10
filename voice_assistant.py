@@ -9,14 +9,15 @@ import pyttsx3
 import os
 import sys
 from datetime import datetime
-import json
 
 # Handle different OpenAI library versions
 try:
     from openai import OpenAI
     OPENAI_V1 = True
+    openai_module = None  # Not needed for v1
 except ImportError:
-    import openai
+    import openai as openai_module
+    OpenAI = None
     OPENAI_V1 = False
 
 
@@ -56,8 +57,7 @@ class VoiceAssistant:
             if OPENAI_V1:
                 self.openai_client = OpenAI(api_key=self.api_key)
             else:
-                import openai
-                openai.api_key = self.api_key
+                openai_module.api_key = self.api_key
                 self.openai_client = None
         else:
             self.openai_client = None
@@ -130,8 +130,7 @@ class VoiceAssistant:
                 assistant_message = response.choices[0].message.content.strip()
             else:
                 # Old OpenAI library (v0.x)
-                import openai
-                response = openai.ChatCompletion.create(
+                response = openai_module.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "You are a helpful voice assistant. Provide concise and friendly responses."},
