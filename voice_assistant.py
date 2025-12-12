@@ -25,6 +25,8 @@ except ImportError:
     OPENAI_V1 = False
 
 
+    # Initialize the voice assistant
+        
 class VoiceAssistant:
     """Main Voice Assistant class"""
     
