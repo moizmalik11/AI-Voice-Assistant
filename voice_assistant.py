@@ -30,8 +30,11 @@ except ImportError:
 class VoiceAssistant:
     """Main Voice Assistant class"""
     
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, status_callback=None, chat_callback=None):
         """Initialize the voice assistant with necessary components"""
+        self.status_callback = status_callback
+        self.chat_callback = chat_callback
+        self.is_running = False
         # Initialize speech recognition
         self.recognizer = sr.Recognizer()
         
@@ -79,6 +82,12 @@ class VoiceAssistant:
     def speak(self, text):
         """Convert text to speech"""
         print(f"Assistant: {text}")
+        if self.chat_callback:
+            self.chat_callback("assistant", text)
+            
+        if self.status_callback:
+            self.status_callback("Speaking...")
+
         if self.tts_available and self.tts_engine:
             self.tts_engine.say(text)
             self.tts_engine.runAndWait()
@@ -91,11 +100,17 @@ class VoiceAssistant:
             
         with self.microphone as source:
             print("Listening...")
+            if self.status_callback:
+                self.status_callback("Listening...")
+                
             # Adjust for ambient noise
             self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
             try:
                 audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=10)
                 print("Processing speech...")
+                if self.status_callback:
+                    self.status_callback("Thinking...")
+                
                 text = self.recognizer.recognize_google(audio)
                 print(f"You said: {text}")
                 return text
@@ -110,6 +125,8 @@ class VoiceAssistant:
     
     def generate_ai_response(self, user_input):
         """Generate AI response using OpenAI API"""
+        if self.status_callback:
+            self.status_callback("Thinking...")
         if not self.api_key:
             # Fallback responses if no API key
             return self.generate_fallback_response(user_input)
@@ -192,6 +209,10 @@ class VoiceAssistant:
         if not text:
             return False
         
+        # Notify GUI of user input
+        if self.chat_callback:
+            self.chat_callback("user", text)
+        
         text_lower = text.lower()
         
         # Check for exit commands
@@ -215,8 +236,9 @@ class VoiceAssistant:
         self.speak(f"Hello! I am your AI voice assistant. Say '{self.wake_word}' followed by your command, or just start speaking.")
         
         listening_mode = True
+        self.is_running = True
         
-        while True:
+        while self.is_running:
             try:
                 # Listen for input
                 text = self.listen()
