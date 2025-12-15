@@ -7,9 +7,7 @@ from voice_assistant import VoiceAssistant
 
 # Configuration
 ctk.set_appearance_mode("Dark")
-ctk.set_default_color_theme("yellow")
-
-
+ctk.set_default_color_theme("blue")
 
 class VoiceAssistantGUI(ctk.CTk):
     def __init__(self):
