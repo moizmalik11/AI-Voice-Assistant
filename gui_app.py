@@ -47,7 +47,11 @@ class VoiceAssistantGUI(ctk.CTk):
         )
         self.title_label.pack(pady=10)
 
-  
+        self.status_label = ctk.CTkLabel(
+            self.header_frame,
+            text="Ready to start",
+            font=ctk.CTkFont(size=14),
+            text_color="gray"
         )
         self.status_label.pack(pady=(0, 10))
 
