@@ -74,7 +74,19 @@ const VoiceInterface = ({ onEndSession }) => {
                     </div>
                 ))}
 
-
+                {/* State Indicator */}
+                {isListening && (
+                    <div className="flex justify-start animate-fade-in-up">
+                        <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tl-none flex items-center gap-3">
+                            <div className="flex gap-1 h-3 items-center">
+                                <span className="w-1.5 h-3 bg-cyan-400 rounded-full animate-wave-1"></span>
+                                <span className="w-1.5 h-5 bg-cyan-400 rounded-full animate-wave-2"></span>
+                                <span className="w-1.5 h-3 bg-cyan-400 rounded-full animate-wave-3"></span>
+                            </div>
+                            <span className="text-cyan-400 font-medium italic">Listening...</span>
+                        </div>
+                    </div>
+                )}
 
                 <div ref={bottomRef} />
             </main>
