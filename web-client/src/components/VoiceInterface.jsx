@@ -51,8 +51,8 @@ const VoiceInterface = ({ onEndSession }) => {
                         <div className={`max-w-[85%] md:max-w-[70%] text-left`}>
                             <div
                                 className={`p-4 rounded-2xl shadow-sm ${msg.role === 'user'
-                                        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none'
-                                        : 'bg-slate-800 border border-slate-700 text-slate-100 rounded-tl-none'
+                                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-tr-none'
+                                    : 'bg-slate-800 border border-slate-700 text-slate-100 rounded-tl-none'
                                     }`}
                             >
                                 <p className="text-lg leading-relaxed">{msg.text}</p>
@@ -74,19 +74,7 @@ const VoiceInterface = ({ onEndSession }) => {
                     </div>
                 ))}
 
-                {/* State Indicator */}
-                {isListening && (
-                    <div className="flex justify-start animate-fade-in-up">
-                        <div className="bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tl-none flex items-center gap-3">
-                            <div className="flex gap-1 h-3 items-center">
-                                <span className="w-1.5 h-3 bg-cyan-400 rounded-full animate-wave-1"></span>
-                                <span className="w-1.5 h-5 bg-cyan-400 rounded-full animate-wave-2"></span>
-                                <span className="w-1.5 h-3 bg-cyan-400 rounded-full animate-wave-3"></span>
-                            </div>
-                            <span className="text-cyan-400 font-medium italic">Listening...</span>
-                        </div>
-                    </div>
-                )}
+
 
                 <div ref={bottomRef} />
             </main>
