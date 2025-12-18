@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import apiService from '../services/api';
 
 const useVoiceAssistant = () => {
     const [isListening, setIsListening] = useState(false);
@@ -47,18 +48,34 @@ const useVoiceAssistant = () => {
         }
     };
 
-    const handleUserMessage = (text) => {
+    const handleUserMessage = async (text) => {
         // Add User Message
         const userMsg = { role: 'user', text };
         setMessages(prev => [...prev, userMsg]);
 
-        // Simulate AI Processing (Mock)
-        // In a real app, you would call an API here.
-        setTimeout(() => {
-            const aiText = `I heard you say: "${text}". How can I help further?`;
-            const aiMsg = { role: 'assistant', text: aiText };
-            setMessages(prev => [...prev, aiMsg]);
-        }, 1000);
+        // Call Backend API for AI Response
+        try {
+            const result = await apiService.sendMessage(text);
+
+            if (result.success) {
+                const aiMsg = { role: 'assistant', text: result.response };
+                setMessages(prev => [...prev, aiMsg]);
+            } else {
+                // Show error message
+                const errorMsg = {
+                    role: 'assistant',
+                    text: `Error: ${result.error || 'Failed to get response from AI'}`
+                };
+                setMessages(prev => [...prev, errorMsg]);
+            }
+        } catch (error) {
+            console.error('Error calling API:', error);
+            const errorMsg = {
+                role: 'assistant',
+                text: 'Sorry, I encountered an error. Please make sure the backend server is running.'
+            };
+            setMessages(prev => [...prev, errorMsg]);
+        }
     };
 
     const speakText = (text) => {

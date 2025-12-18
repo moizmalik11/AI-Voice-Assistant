@@ -1,174 +1,249 @@
-# AI-Voice-Assistant
+# AI Voice Assistant
 
 An intelligent voice assistant powered by AI that can listen to your voice commands, process them using artificial intelligence, and respond back with natural speech.
 
-## Features
+## 🏗️ Architecture
 
-- 🎤 **Speech Recognition**: Converts your voice into text using Google Speech Recognition
-- 🤖 **AI-Powered Responses**: Uses OpenAI's GPT-3.5 to generate intelligent and contextual responses
-- 🔊 **Text-to-Speech**: Converts AI responses back to natural-sounding speech
-- 💬 **Conversation History**: Maintains context across multiple interactions
-- 🔄 **Fallback Mode**: Works with basic functionality even without OpenAI API key
-- ⚡ **Real-time Processing**: Fast response times for seamless interaction
+This project consists of two main components:
 
-## Prerequisites
+- **Backend (Python Flask)**: Handles all AI processing using OpenAI's GPT models
+- **Frontend (React)**: Provides a modern web interface for voice interaction
 
-- Python 3.7 or higher
-- Microphone for voice input
-- Speakers or headphones for audio output
-- OpenAI API key (optional, but recommended for full AI features)
-
-## Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/moizmalik11/AI-Voice-Assistant.git
-   cd AI-Voice-Assistant
-   ```
-
-2. **Create a virtual environment (recommended)**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your OpenAI API key
-   ```
-
-## Configuration
-
-### OpenAI API Key
-
-To enable full AI-powered features, you need an OpenAI API key:
-
-1. Sign up at [OpenAI](https://platform.openai.com/)
-2. Generate an API key from the [API Keys page](https://platform.openai.com/api-keys)
-3. Add the key to your `.env` file:
-   ```
-   OPENAI_API_KEY=your_actual_api_key_here
-   ```
-
-Alternatively, you can set it as an environment variable:
-```bash
-export OPENAI_API_KEY='your_actual_api_key_here'
+```
+┌─────────────────┐         ┌──────────────────┐         ┌─────────────┐
+│  React Frontend │ ──────▶ │  Flask Backend   │ ──────▶ │  OpenAI API │
+│  (Web Client)   │ ◀────── │  (Python)        │ ◀────── │  (GPT-3.5)  │
+└─────────────────┘         └──────────────────┘         └─────────────┘
+      Voice Input                AI Processing              AI Response
 ```
 
-### Without OpenAI API Key
+## ✨ Features
 
-The assistant will still work without an API key but with limited functionality:
-- Basic pattern matching for common queries
-- Time and date information
-- Simple conversational responses
+- 🎤 **Browser-based Speech Recognition**: Uses Web Speech API for voice input
+- 🤖 **AI-Powered Responses**: OpenAI GPT-3.5-turbo generates intelligent, contextual responses
+- 🔊 **Text-to-Speech**: Browser-based speech synthesis for voice output
+- 💬 **Conversation History**: Maintains context across multiple interactions
+- 🌐 **Modern Web Interface**: Beautiful, responsive React UI
+- 🔒 **Secure**: API keys stored in environment variables
+- ⚡ **Real-time Processing**: Fast response times for seamless interaction
 
-## Usage
+## 📋 Prerequisites
 
-Run the voice assistant:
+- Python 3.8 or higher
+- Node.js 18 or higher
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- Modern web browser (Chrome, Edge, or Safari recommended for best voice support)
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/moizmalik11/AI-Voice-Assistant.git
+cd AI-Voice-Assistant
+```
+
+### 2. Backend Setup
+
+```bash
+# Navigate to backend directory
+cd backend
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+copy .env.example .env
+# Edit .env and add your OpenAI API key
+
+# Start the backend server
+python app.py
+```
+
+The backend will start on `http://localhost:5000`
+
+### 3. Frontend Setup
+
+Open a new terminal:
+
+```bash
+# Navigate to web client directory
+cd web-client
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The frontend will start on `http://localhost:5173`
+
+### 4. Open in Browser
+
+Visit `http://localhost:5173` and start talking to your AI assistant!
+
+## 📁 Project Structure
+
+```
+AI-Voice-Assistant/
+├── backend/                    # Python Flask backend
+│   ├── app.py                 # Main Flask application
+│   ├── config.py              # Configuration management
+│   ├── requirements.txt       # Python dependencies
+│   ├── .env.example          # Environment template
+│   ├── README.md             # Backend documentation
+│   └── services/
+│       ├── __init__.py
+│       └── ai_service.py     # OpenAI integration
+│
+├── web-client/                # React frontend
+│   ├── src/
+│   │   ├── components/       # React components
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── services/        # API service layer
+│   │   ├── App.jsx          # Main app component
+│   │   └── main.jsx         # Entry point
+│   ├── package.json
+│   └── README.md
+│
+├── gui_app.py                 # Desktop GUI (separate app)
+├── voice_assistant.py         # CLI voice assistant (legacy)
+├── .gitignore
+└── README.md                  # This file
+```
+
+## 🔧 Configuration
+
+### Backend Configuration
+
+Edit `backend/.env`:
+
+```env
+# Required
+OPENAI_API_KEY=sk-your-actual-api-key-here
+
+# Optional (defaults shown)
+OPENAI_MODEL=gpt-3.5-turbo
+MAX_TOKENS=500
+TEMPERATURE=0.7
+PORT=5000
+FLASK_ENV=development
+```
+
+### Frontend Configuration
+
+Edit `web-client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+## 🎯 Usage
+
+1. **Start Backend**: Make sure the Flask backend is running
+2. **Start Frontend**: Open the React app in your browser
+3. **Click Microphone**: Click the microphone button to start listening
+4. **Speak**: Say your question or command
+5. **Get Response**: The AI will respond with text and voice
+
+### Example Interactions
+
+- "What is artificial intelligence?"
+- "Tell me a joke"
+- "What's the weather like?" (AI will explain it can't access real-time data)
+- "Explain quantum computing in simple terms"
+- "Write a short poem about coding"
+
+## 🛠️ API Endpoints
+
+The backend provides the following REST API endpoints:
+
+- `GET /api/health` - Health check
+- `POST /api/chat` - Send message and get AI response
+- `POST /api/conversation/reset` - Reset conversation history
+- `POST /api/conversation/history` - Get conversation history
+
+See [backend/README.md](backend/README.md) for detailed API documentation.
+
+## 🎨 Additional Applications
+
+### Desktop GUI Application
+
+A standalone desktop application is also available:
+
+```bash
+python gui_app.py
+```
+
+This uses CustomTkinter for a native desktop experience.
+
+### CLI Voice Assistant
+
+For command-line usage:
 
 ```bash
 python voice_assistant.py
 ```
 
-### How to Interact
+## 🔍 Troubleshooting
 
-1. **Start the assistant**: Run the script and wait for the initialization message
-2. **Speak your command**: Simply start speaking when you see "Listening..."
-3. **Wait for response**: The assistant will process your input and respond
-4. **Continue conversation**: Keep talking - the assistant maintains conversation context
-5. **Exit**: Say "exit", "quit", or "goodbye" to stop the assistant
+### Backend Issues
 
-### Example Interactions
+**"AI service not initialized"**
+- Check that `OPENAI_API_KEY` is set in `backend/.env`
+- Verify the API key is valid
 
-```
-You: "Hello, how are you?"
-Assistant: "Hello! I'm doing well, thank you for asking! How can I assist you?"
+**CORS errors**
+- Ensure `CORS_ORIGINS` in `backend/.env` includes your frontend URL
 
-You: "What's the current time?"
-Assistant: "The current time is 3:45 PM"
+### Frontend Issues
 
-You: "Tell me a joke"
-Assistant: "Why did the programmer quit his job? Because he didn't get arrays!"
+**"Cannot connect to server"**
+- Make sure the backend is running on `http://localhost:5000`
+- Check `VITE_API_URL` in `web-client/.env`
 
-You: "Goodbye"
-Assistant: "Goodbye! Have a great day!"
-```
+**Voice input not working**
+- Use Chrome, Edge, or Safari (best browser support)
+- Grant microphone permissions when prompted
+- Check browser console for errors
 
-## Troubleshooting
+## 🔒 Security Notes
 
-### Microphone Issues
+- Never commit `.env` files to version control
+- Keep your OpenAI API key secure
+- Use HTTPS in production
+- The `.env.example` files are safe templates without real keys
 
-If the assistant can't hear you:
-- Check your microphone is properly connected
-- Verify microphone permissions are granted
-- Test your microphone with other applications
-
-### Installation Issues
-
-**PyAudio installation fails:**
-- On Ubuntu/Debian: `sudo apt-get install portaudio19-dev python3-pyaudio`
-- On macOS: `brew install portaudio`
-- On Windows: Download the appropriate `.whl` file from [PyAudio wheels](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio)
-
-**Speech recognition errors:**
-- Ensure you have an active internet connection (Google Speech Recognition requires internet)
-- Check your microphone is working properly
-
-### API Issues
-
-If AI responses aren't working:
-- Verify your OpenAI API key is correct
-- Check you have available credits in your OpenAI account
-- Ensure the API key is properly set in your environment
-
-## Project Structure
-
-```
-AI-Voice-Assistant/
-├── voice_assistant.py   # Main application file
-├── requirements.txt     # Python dependencies
-├── .env.example        # Example environment configuration
-├── .gitignore          # Git ignore rules
-└── README.md           # This file
-```
-
-## How It Works
-
-1. **Speech Recognition**: The assistant uses the `speech_recognition` library to capture audio from your microphone and convert it to text using Google's Speech Recognition API.
-
-2. **AI Processing**: The text is sent to OpenAI's GPT-3.5 model, which generates an intelligent, contextual response based on the conversation history.
-
-3. **Text-to-Speech**: The AI's response is converted back to speech using the `pyttsx3` library, which uses the system's built-in text-to-speech engine.
-
-4. **Conversation Management**: The assistant maintains a conversation history to provide context-aware responses across multiple interactions.
-
-## Privacy & Security
-
-- Voice data is processed using Google's Speech Recognition API
-- Conversation data is sent to OpenAI's API (when enabled)
-- API keys are stored in environment variables, not in code
-- The `.env` file is excluded from version control
-
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📄 License
 
 This project is open source and available under the MIT License.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- [SpeechRecognition](https://github.com/Uberi/speech_recognition) for voice input
-- [pyttsx3](https://github.com/nateshmbhat/pyttsx3) for text-to-speech
-- [OpenAI](https://openai.com/) for AI-powered responses
+- [OpenAI](https://openai.com/) for GPT-3.5 API
+- [Flask](https://flask.palletsprojects.com/) for the backend framework
+- [React](https://react.dev/) for the frontend framework
+- [Vite](https://vitejs.dev/) for fast development
+- [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for browser-based speech recognition
 
-## Support
+## 📞 Support
 
 If you encounter any issues or have questions, please open an issue on GitHub.
+
+---
+
+**Made with ❤️ by [Moiz Malik](https://github.com/moizmalik11)**

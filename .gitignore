@@ -1,5 +1,7 @@
 # Environment variables
 .env
+backend/.env
+web-client/.env
 
 # Python
 __pycache__/
@@ -42,3 +44,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Node.js / Frontend
+node_modules/
+web-client/node_modules/
+web-client/dist/
+web-client/.vite/
+
