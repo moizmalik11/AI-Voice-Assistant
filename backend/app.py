@@ -11,11 +11,7 @@ from config import Config
 from services import AIService
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+
 
 # Initialize Flask app
 app = Flask(__name__)
