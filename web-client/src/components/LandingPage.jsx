@@ -1,36 +1,77 @@
-import React from 'react';
-import { Mic } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { TextPlugin } from 'gsap/TextPlugin';
+import { Mic, ArrowRight } from 'lucide-react';
+import ShaderBackground from '@/components/ui/shader-background';
+import apiService from '@/services/api';
+
+gsap.registerPlugin(TextPlugin);
 
 const LandingPage = ({ onStart }) => {
+    const line1Ref = useRef(null);
+    const line2Ref = useRef(null);
+    const containerRef = useRef(null);
+    const buttonRef = useRef(null);
+    const micRef = useRef(null);
+
+    useEffect(() => {
+        // Fast fade in for the main container
+        gsap.to(containerRef.current, { opacity: 1, duration: 0.3 });
+
+        // Coordinated animation timeline
+        const tl = gsap.timeline();
+
+        // 1. Show Mic and Button quickly
+        tl.fromTo([micRef.current, buttonRef.current], 
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' }
+        );
+
+        // 2. Swipe reveal animation for text lines
+        tl.fromTo([line1Ref.current, line2Ref.current],
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power4.out' },
+            "-=0.5" // Start slightly before mic/button finish
+        );
+
+        // Pre-warm the AI API so it's ready when user clicks start
+        apiService.warmup();
+    }, []);
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black flex flex-col items-center justify-center text-white p-4">
-            <div className="bg-white/5 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/10 text-center max-w-lg w-full transform transition-all hover:scale-105 duration-500">
-                <div className="mb-8 flex justify-center">
-                    <div className="p-4 bg-cyan-500/20 rounded-full animate-pulse-slow">
-                        <Mic className="w-16 h-16 text-cyan-400" />
+        <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center font-sans">
+            <ShaderBackground />
+            
+            <div ref={containerRef} className="relative z-10 flex flex-col items-center text-center p-8 max-w-2xl opacity-0">
+                <div ref={micRef} className="mb-8 p-5 rounded-[2rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] group hover:scale-105 transition-transform duration-500 opacity-0">
+                    <Mic className="w-12 h-12 text-white/70 group-hover:text-white transition-colors" />
+                </div>
+                
+                {/* Text: Modern font, no bold, Swipe reveal style */}
+                <div className="text-4xl md:text-5xl font-light text-white/90 tracking-wide mb-12 flex flex-col gap-2">
+                    <div className="overflow-hidden pt-2">
+                        <div ref={line1Ref} className="opacity-0">Your AI Voice assistant</div>
+                    </div>
+                    <div className="overflow-hidden pb-2">
+                        <div ref={line2Ref} className="opacity-0">is here_</div>
                     </div>
                 </div>
-
-                <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-6 pb-2">
-                    Your AI Voice Assistant
-                </h1>
-
-                <p className="text-slate-400 mb-10 text-lg">
-                    Experience the future of conversation. Click below to start talking.
-                </p>
-
+                
                 <button
+                    ref={buttonRef}
                     onClick={onStart}
-                    className="group relative px-8 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full text-lg font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 transition-all duration-300 w-full"
+                    className="group relative px-10 py-4 bg-white/5 hover:bg-white/10 backdrop-blur-2xl border border-white/20 hover:border-white/40 rounded-full text-lg font-light text-white tracking-wide transition-all duration-500 flex items-center gap-4 overflow-hidden opacity-0 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
                 >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                        Get Started
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </span>
+                    <span className="relative z-10">Initialize Session</span>
+                    <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-2 transition-transform duration-300" />
+                    
+                    {/* Subtle glow effect inside button */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-gray-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </button>
             </div>
+            
+            {/* Ambient overlay to ensure text is readable over the shader */}
+            <div className="absolute inset-0 bg-black/20 pointer-events-none z-0" />
         </div>
     );
 };
