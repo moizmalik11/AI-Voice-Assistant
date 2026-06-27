@@ -10,9 +10,12 @@ load_dotenv()
 class Config:
     """Application configuration"""
     
-    # OpenAI Configuration
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
+    # Gemini Configuration
+    GEMINI_API_KEYS = []
+    for k, v in os.environ.items():
+        if k.startswith('GEMINI_API_KEY_') and v.strip():
+            GEMINI_API_KEYS.append(v.strip())
+    GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-2.0-flash')
     MAX_TOKENS = int(os.getenv('MAX_TOKENS', '500'))
     TEMPERATURE = float(os.getenv('TEMPERATURE', '0.7'))
     
@@ -31,10 +34,7 @@ class Config:
     @staticmethod
     def validate():
         """Validate required configuration"""
-        if not Config.OPENAI_API_KEY:
-            raise ValueError("OPENAI_API_KEY is required. Please set it in .env file")
-        
-        if not Config.OPENAI_API_KEY.startswith('sk-'):
-            raise ValueError("Invalid OPENAI_API_KEY format")
+        if not Config.GEMINI_API_KEYS:
+            raise ValueError("GEMINI_API_KEYS is required. Please set it in .env file")
         
         return True

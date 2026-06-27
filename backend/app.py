@@ -11,7 +11,8 @@ from config import Config
 from services import AIService
 
 # Configure logging
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -29,8 +30,8 @@ CORS(app, resources={
 try:
     Config.validate()
     ai_service = AIService(
-        api_key=Config.OPENAI_API_KEY,
-        model=Config.OPENAI_MODEL,
+        api_keys=Config.GEMINI_API_KEYS,
+        model=Config.GEMINI_MODEL,
         max_tokens=Config.MAX_TOKENS,
         temperature=Config.TEMPERATURE
     )
@@ -48,6 +49,22 @@ def health_check():
         "timestamp": datetime.now().isoformat(),
         "ai_service": "ready" if ai_service else "not initialized"
     }), 200
+
+
+@app.route('/api/warmup', methods=['GET', 'POST', 'OPTIONS'])
+def warmup():
+    """Warmup endpoint to wake up the AI model"""
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+        
+    try:
+        if ai_service:
+            success = ai_service.warmup()
+            return jsonify({"success": success}), 200
+        return jsonify({"error": "AI service not initialized"}), 503
+    except Exception as e:
+        logger.error(f"Warmup error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/api/chat', methods=['POST'])
