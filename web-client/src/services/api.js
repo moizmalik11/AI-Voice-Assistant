@@ -105,6 +105,22 @@ class APIService {
     }
 
     /**
+     * Warmup the AI service to prevent cold-start 503 errors
+     * @returns {Promise<boolean>} Success status
+     */
+    async warmup() {
+        try {
+            await axios.post(`${this.baseURL}/api/warmup`, {}, {
+                timeout: 10000
+            });
+            return true;
+        } catch (error) {
+            console.error('Warmup failed (this is usually fine, just pre-loading):', error);
+            return false;
+        }
+    }
+
+    /**
      * Get conversation history
      * @returns {Promise<Array>} Conversation messages
      */
