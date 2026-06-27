@@ -4,8 +4,8 @@
 flask>=3.0.0
 flask-cors>=4.0.0
 
-# OpenAI API
-openai>=1.0.0
+# Gemini API
+google-genai>=0.1.0
 
 # Environment Variables
 python-dotenv>=1.0.0
